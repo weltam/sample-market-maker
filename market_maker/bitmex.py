@@ -8,7 +8,7 @@ import base64
 import uuid
 from market_maker.auth import APIKeyAuthWithExpires
 from market_maker.utils import constants, errors, log
-from market_maker.ws.ws_thread import BitMEXWebsocket
+from ws_thread import BitMEXWebsocket
 
 logger = log.setup_custom_logger('root')
 
