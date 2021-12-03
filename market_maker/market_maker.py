@@ -17,12 +17,6 @@ import os
 watched_files_mtimes = [(f, getmtime(f)) for f in settings.WATCHED_FILES]
 
 
-#
-# Helpers
-#
-logger = log.setup_custom_logger('root')
-
-
 class ExchangeInterface:
     def __init__(self, dry_run=False):
         self.dry_run = dry_run
@@ -215,6 +209,7 @@ class OrderManager:
 
         self.start_time = datetime.now()
         self.instrument = self.exchange.get_instrument()
+        
         if settings.ORDER_START_SIZE % self.instrument['lotSize'] != 0 or settings.ORDER_START_SIZE < self.instrument['lotSize']:
             print(f"Invalid ORDER_START_SIZE, must be divisible by lotSize of {self.exchange.symbol} instrument")
             print(f"Setting ORDER_START_SIZE to lotSize of {self.exchange.symbol}: {self.instrument['lotSize']}")

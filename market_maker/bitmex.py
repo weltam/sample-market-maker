@@ -16,44 +16,6 @@ logger = log.setup_custom_logger('root')
 # https://www.bitmex.com/api/explorer/
 class BitMEX(object):
 
-    """BitMEX API Connector."""
-
-    def __init__(self, base_url=None, symbol=None, apiKey=None, apiSecret=None,
-                 orderIDPrefix='mm_bitmex_', shouldWSAuth=True, postOnly=False, timeout=7):
-        """Init connector."""
-        self.base_url = base_url
-        self.symbol = symbol
-        self.postOnly = postOnly
-        if (apiKey is None):
-            raise Exception("Please set an API key and Secret to get started. See " +
-                            "https://github.com/BitMEX/sample-market-maker/#getting-started for more information."
-                            )
-        self.apiKey = apiKey
-        self.apiSecret = apiSecret
-        if len(orderIDPrefix) > 13:
-            raise ValueError("settings.ORDERID_PREFIX must be at most 13 characters long!")
-        self.orderIDPrefix = orderIDPrefix
-        self.retries = 0  # initialize counter
-
-        # Prepare HTTPS session
-        self.session = requests.Session()
-        # These headers are always sent
-        self.session.headers.update({'user-agent': 'liquidbot-' + constants.VERSION})
-        self.session.headers.update({'content-type': 'application/json'})
-        self.session.headers.update({'accept': 'application/json'})
-
-        # Create websocket for streaming data
-        self.ws = BitMEXWebsocket()
-        self.ws.connect(base_url, symbol, shouldAuth=shouldWSAuth)
-
-        self.timeout = timeout
-
-    def __del__(self):
-        self.exit()
-
-    def exit(self):
-        self.ws.exit()
-
     #
     # Public methods
     #
@@ -91,18 +53,6 @@ class BitMEX(object):
         """
         return self.ws.recent_trades()
 
-    #
-    # Authentication required methods
-    #
-    def authentication_required(fn):
-        """Annotation for methods that require auth."""
-        def wrapped(self, *args, **kwargs):
-            if not (self.apiKey):
-                msg = "You must be authenticated to use this method"
-                raise errors.AuthenticationError(msg)
-            else:
-                return fn(self, *args, **kwargs)
-        return wrapped
 
     @authentication_required
     def funds(self):
